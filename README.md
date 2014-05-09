@@ -5,7 +5,7 @@ This repo contains code that facilitates input of image data into matlab, and th
 
   There are two main groups of scripts here, classified based on the type of data they are designed to interpret.
    
-    Unsegemnted Data
+    Unsegmented Data
       imseq_import
       imseq_MASTERscript
     
