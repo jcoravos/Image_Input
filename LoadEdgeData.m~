@@ -1,18 +1,32 @@
-%% Extracting Data from Edge Output
-timestep = 8.3;
-xydim = 0.13; %this is the xy dimension from the metadata, where xydim = microns/pixel. This number needs to be the same as was used in 
+function [ OutputStruct ] = FLoadEdgeData(InputStruct)
+    %This function takes an input structure where the fields include the
+    %following information:
+        %timestep
+        %xy dimension
+        %z dimension
+        %z channel to keep
+        %Image name
+        %memchannel
+        %signalchannel
+        %Root
+%% Extracting Image-specific Data from InputStruct
+timestep = InputStruct.timestep;
+xydim = InputStruct.z; %this is the xy dimension from the metadata, where xydim = microns/pixel. This number needs to be the same as was used in 
                 %Edge, which can be verified by looking at the .csv file in Matlab/EDGE-1.06/
     conv_fact = (1/xydim); % pixels/micron
-zkeep = '_z008'; %zslice to keep
-memchannel = '_c002'; %membrane channel
-rokchannel = '_c001'; %Rok (or other signal) channel
+if InputStruct.zslice < 10
+    zkeep = strcat('_z00',num2str(InputStruct.zslice)); %zslice to keep
+else 
+    zkeep = strcat('_z0',num2str(InputStruct.zlice));
+end
+
+memchannel = strcat('_c00',num2str(InputStruct.memchannel));
+signalchannel = strcat('_c00',num2str(InputStruct.signalchannel)); %Rok (or other signal) channel
 
 %% File Names
-
-rokfileRoot = '/Users/jcoravos/Documents/MATLAB/EDGE-1.06/DATA_GUI/Image5_011113/Myosin/Image5_011113_t';
-%moefile = '/Users/Jonathan/MATLAB/BlebQuant/FixedMoeBlebs/PhallSqhMoe_2/PhallSqhMoe_2_z007_c003.tif'; %adjust the 'z007' here to change the slice.
-membraneRoot = '/Users/jcoravos/Documents/MATLAB/EDGE-1.06/DATA_GUI/Image5_011113/Membranes/Raw/Image5_011113_t';%make this the file used for Edge membrane segmentation
-measdir = '/Users/jcoravos/Documents/MATLAB/EDGE-1.06/DATA_GUI/Image5_011113/Measurements/';
+rokfileRoot = strcat(InputStruct.Root,InputStruct.Filename,'/Myosin/',InputStruct.Filename,'_t');
+membraneRoot = strcat(InputStruct.Root,InputStruct.Filename,'/Membranes/Raw/', InputStruct.Filename,'_t') ;%make this the file used for Edge membrane segmentation
+measdir = strcat(InputStruct.Root,InputStruct.Filename,'/Measurements/');
     measCenty = 'Membranes--basic_2d--Centroid-y.mat';
     measCentx = 'Membranes--basic_2d--Centroid-x.mat';
     measVerty = 'Membranes--vertices--Vertex-y.mat';
@@ -30,29 +44,29 @@ measdir = '/Users/jcoravos/Documents/MATLAB/EDGE-1.06/DATA_GUI/Image5_011113/Mea
     %corresponds to the slice of the embryo you edged! 1 is the first
     %slice, 2, is the second, etc.
     
-    slice = 2
+    slice = InputStruct.edgedslice;
 Centy = load(strcat(measdir,measCenty));
-    Centy = Centy.data(:,slice ,:);
+    OutputStruct.Centy = Centy.data(:,slice ,:);
     %[m n p] = size(Centy);
     %Centy = reshape(Centy,p,m);
 Centx = load(strcat(measdir,measCentx));
-    Centx = Centx.data(:,slice,:);
+    OutputStruct.Centx = Centx.data(:,slice,:);
     %[m n p] = size(Centx);
     %Centx = reshape(Centx,p,m);
 Verty = load(strcat(measdir,measVerty));
-    Verty = Verty.data(:,slice,:);
+    OutputStruct.Verty = Verty.data(:,slice,:);
     %[m n p] = size(Verty);
     %Verty = reshape(Verty,p,m);
 Vertx = load(strcat(measdir,measVertx));
-    Vertx = Vertx.data(:,slice,:);
+    OutputStruct.Vertx = Vertx.data(:,slice,:);
     %[m n p] = size(Vertx);
     %Vertx = reshape(Vertx,p,m);
 Area = load(strcat(measdir,measArea));
-     Area = squeeze(cell2mat(Area.data(:,slice,:)));
+     OutputStruct.Area = squeeze(cell2mat(Area.data(:,slice,:)));
      %[m n p] = size(Area);
      %Area = reshape(Area,p,m);
 Perim = load(strcat(measdir,measPerim));
-    Perim = Perim.data(:,slice,:);
+    OutputStruct.Perim = Perim.data(:,slice,:);
     %[m n p] = size(Perim);
     %Perim = reshape(Perim,p,m);
 RokInt = load(strcat(measdir,myoInt));
@@ -83,16 +97,17 @@ for frame = 1:frame_num;
         timestep = strcat('0',num2str(frame));
     end
     mem_file = strcat(membraneRoot,timestep,zkeep,memchannel,'.tif');
-    rok_file = strcat(rokfileRoot, timestep, zkeep,rokchannel,'.tif');
+    rok_file = strcat(rokfileRoot, timestep, zkeep,signalchannel,'.tif');
     
     membranestack(:,:,frame) = imread(mem_file);
     rokstack(:,:,frame) = imread(rok_file);
 
 end
-    
-    
-%% Clean up
 
-clear measCenty measCentx measVerty measVertx measArea measPerim measdir
+OutputStruct.membranestack = membranestack
+OutputStruct.rokstack = rokstack
+
+    
+end
 
 
