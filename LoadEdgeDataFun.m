@@ -62,7 +62,8 @@ Area = load(strcat(measdir,measArea));
 Perim = load(strcat(measdir,measPerim));
     OutputStruct.Perim = squeeze(Perim.data(:,slice,:));
    
-OutputStruct.RokInt = load(strcat(measdir,myoInt));
+SigInt = load(strcat(measdir,myoInt));
+    OutputStruct.SigInt = squeeze(SigInt.data(:,slice,:));
 %% Determine framenum and cellnum
     [frame_num,cell_num] = size(OutputStruct.Area);
 OutputStruct.frame_num = frame_num;
@@ -98,7 +99,7 @@ for frame = 1:frame_num;
 end
 
 OutputStruct.membranestack = membranestack
-OutputStruct.rokstack = rokstack
+OutputStruct.signal = rokstack
 
     
 end
