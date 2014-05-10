@@ -54,5 +54,7 @@ I.Root          = '/Users/jcoravos/Documents/MATLAB/EDGE-1.06/DATA_GUI/';
 I.edgedslice    = 2;
 I.injection     = 5; %this should be NaN if there is no live perturbation
 
-InputStruct_Image5_011113 = I;
+%% Store data in uniquely named structure
+
+Input_Image5_011113 = I; %IMPORTANT: Change this structure name to reflect your image filename
 clear I
