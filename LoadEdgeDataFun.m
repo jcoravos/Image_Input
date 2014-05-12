@@ -63,7 +63,11 @@ Perim = load(strcat(measdir,measPerim));
     OutputStruct.Perim = squeeze(Perim.data(:,slice,:));
    
 SigInt = load(strcat(measdir,myoInt));
-    OutputStruct.SigInt = squeeze(SigInt.data(:,slice,:));
+    OutputStruct.SigInt = squeeze(cell2mat(SigInt.data(:,slice,:)));
+    
+OutputStruct.SigInt_areanorm = OutputStruct.SigInt./OutputStruct.Area; %generates an area-normalized signal intensity
+
+    
 %% Determine framenum and cellnum
     [frame_num,cell_num] = size(OutputStruct.Area);
 OutputStruct.frame_num = frame_num;
