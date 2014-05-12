@@ -7,7 +7,7 @@ function [ O ] = LoadEdgeDataFun(I,type)
         %zslice: the slice number to keep (just the number, i.e. "5", not "z005"
         %Filename: 'Image1_011113'. Don't include slashes or file suffix
         %memchannel: which number channel. Don't include _c00
-        %signalchannel: same, but for Rok or Myosin channel
+        %signalchannel1: same, but for Rok or Myosin channel
         %Root: File directory up to 'DATA_GUI/', e.g.
              %'/Users/jcoravos/Documents/MATLAB/EDGE-1.06/DATA_GUI/'.
              %Everything following ~/DATA_GUI/' is provided in the script
@@ -15,10 +15,7 @@ function [ O ] = LoadEdgeDataFun(I,type)
         %type is either 1 if the image is a still, or 2 if the image is a
         %movie.
 %% Extracting Image-specific Data from InputStruct
-timestep = I.timestep;
-xydim = I.z; %this is the xy dimension from the metadata, where xydim = microns/pixel. This number needs to be the same as was used in 
-                %Edge, which can be verified by looking at the .csv file in Matlab/EDGE-1.06/
-    conv_fact = (1/xydim); % pixels/micron
+conv_fact = (1/I.z); % pixels/micron -- conversion factor for changing microns to pixels
 if I.zslice < 10
     zkeep = strcat('_z00',num2str(I.zslice)); %zslice to keep
 else 
@@ -26,7 +23,10 @@ else
 end
 
 memchannel = strcat('_c00',num2str(I.memchannel));
-signalchannel = strcat('_c00',num2str(I.signalchannel)); %Rok (or other signal) channel
+signalchannel1 = strcat('_c00',num2str(I.signalchannel1)); %Rok (or other signal) channel
+if isfield(I,'signalchannel2') == 1
+    signalchannel2 = strcat('_c00',num2str(I.signalchannel2)); %a second channel (only if you populate this field in LoadEdgeDataConfig)
+end
 
 %% File Names
 rokfileRoot = strcat(I.Root,I.Filename,'/Myosin/',I.Filename,'_t');
@@ -106,12 +106,12 @@ switch type
 
         for frame = 1:frame_num;
             if frame < 10
-            timestep = strcat('00',num2str(frame));
+            I.timestep = strcat('00',num2str(frame));
         else
-            timestep = strcat('0',num2str(frame));
+            I.timestep = strcat('0',num2str(frame));
             end
-        mem_file = strcat(membraneRoot,timestep,zkeep,memchannel,'.tif');
-        rok_file = strcat(rokfileRoot, timestep, zkeep,signalchannel,'.tif');
+        mem_file = strcat(membraneRoot,I.timestep,zkeep,memchannel,'.tif');
+        rok_file = strcat(rokfileRoot, I.timestep, zkeep,signalchannel1,'.tif');
     
         membranestack(:,:,frame) = imread(mem_file);
         rokstack(:,:,frame) = imread(rok_file);
