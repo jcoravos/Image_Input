@@ -43,18 +43,18 @@
     %NOTE: The .injection field is not necessary to populate if your movie 
     %does not contain a live perturbation.
     
-I.timestep      = 24.3;
-I.xy            = 0.12;
-I.z             = 0.89;
-I.zslice        = 7;
-I.Filename      = 'Image7_121113';
-I.memchannel    = 2;
-I.signalchannel = 1;
+I.timestep      = 1;
+I.xy            = 0.10;
+I.z             = 1;
+I.zslice        = 8;
+I.Filename      = '130614_RoksqhMBS_cont3';
+I.memchannel    = 1;
+I.signalchannel = 2;
+I.signalchannel2 = 3;
 I.Root          = '/Users/jcoravos/Documents/MATLAB/EDGE-1.06/DATA_GUI/';
-I.edgedslice    = 2;
+I.edgedslice    = 1;
 I.injection     = 1; %this should be NaN if there is no live perturbation
 
-%% Store data in uniquely named structure
+%% Store data in separate cells of the structure named structure
 
-Input_Image7_121113 = I; %IMPORTANT: Change this structure name to reflect your image filename
-clear I
+I(1) = I; %change this number each time.
