@@ -15,7 +15,9 @@ function [ O ] = LoadEdgeDataFun(I,type)
         %type is either 1 if the image is a still, or 2 if the image is a
         %movie.
         
-       
+        %One known issue here is that the Edge Output will give a
+        %"Myosin_intensity" reading, but additional channels can be
+        %included in teh 
 %% Extracting Image-specific Data from InputStruct
 conv_fact = (1/I.z); % pixels/micron -- conversion factor for changing microns to pixels
 if I.zslice < 10

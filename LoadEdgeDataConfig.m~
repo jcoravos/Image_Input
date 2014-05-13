@@ -39,7 +39,7 @@
     %       signal: [545x1064x48 uint8]  signal movie
     
 %% Input
-    % Fill in these fields with the relevant information. Leave unused channels blank.
+    % adjust these values to match the file you are importing.
     %NOTE: The .injection field is not necessary to populate if your movie 
     %does not contain a live perturbation.
     
@@ -49,14 +49,10 @@ I.z             = 1;
 I.zslice        = 8;
 I.Filename      = '130614_RoksqhMBS_cont3';
 I.signalchannel1 = 1;
-I.sig1dir = 'RokProj'
 I.signalchannel2 = 2;
-I.sig2dir = 'MBSProj'
 I.signalchannel3 = 3;
-I.sig3dir = 'MyosinProj'
-I.memchannel = 3;
-I.memdir = 'CellsProj'
-I.Root          = '/Users/jcoravos/Documents/MATLAB/Eesh/';
+I.signalchannel4 = 4;
+I.Root          = '/Users/jcoravos/Documents/MATLAB/EDGE-1.06/DATA_GUI/';
 I.edgedslice    = 1;
 I.injection     = 1; %this should be NaN if there is no live perturbation
 
