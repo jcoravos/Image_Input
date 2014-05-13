@@ -13,13 +13,15 @@ function [handle] = merge_sig_plot(varargin)
             I = varargin{1}
             O = varargin{2}
             offset = varargin{3}
-        case 5
+        case 7
             disp('Y-axis Specified')
             I = varargin{1}
             O = varargin{2}
             offset = varargin{3}
-            ymin = varargin{4}
-            ymax = varargin{5}
+            xmin = varargin{4}
+            xmax = varargin{5}
+            ymin = varargin{6}
+            ymax = varargin{7}
         otherwise
             error('Unexpected number of inputs')
     end
@@ -54,8 +56,8 @@ shadedErrorBar(timelabel,meanarea,nanstd(merge,0,2));
 hold on
 plot([offset offset],[-10000 10000])
 
-if nargin == 5                  %if you include ymin and ymax axis, use them to specify axes. Otherwise calculate good 
-    axis([0 xend ymin ymax])
+if nargin == 7                  %if you include ymin and ymax axis, use them to specify axes. Otherwise calculate good 
+    axis([xmin xmax ymin ymax])
 else
     ymax = max(max(merge))
     ymin = min(min(merge))

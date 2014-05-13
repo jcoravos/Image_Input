@@ -5,18 +5,11 @@
     % Open this script, read the directions, and provide the requested
     % information to generate the Input structure
     
-%% Simplify Input Structures
-    %Add structure names here so that they are assigned to these variables
-    I(1) = Input_Image21_121813
-    I(2) = Input_Image5_121813
-    I(3) = Input_Image1_011113
-    I(4) = Input_Image5_011113
-    I(5) = Input_Image7_121113
-    imnum = length(I);
     
     
 %% 2. Generate Output Function
     %You will have to change the names of the Input and Output structures
+    imnum = length(I);
 for i = 1:imnum
     O(i) = LoadEdgeDataFun(I(i));
 end
