@@ -14,6 +14,8 @@ function [ O ] = LoadEdgeDataFun(I,type)
              
         %type is either 1 if the image is a still, or 2 if the image is a
         %movie.
+        
+       
 %% Extracting Image-specific Data from InputStruct
 conv_fact = (1/I.z); % pixels/micron -- conversion factor for changing microns to pixels
 if I.zslice < 10
@@ -27,10 +29,23 @@ signalchannel1 = strcat('_c00',num2str(I.signalchannel1)); %Rok (or other signal
 if isfield(I,'signalchannel2') == 1
     signalchannel2 = strcat('_c00',num2str(I.signalchannel2)); %a second channel (only if you populate this field in LoadEdgeDataConfig)
 end
+if isfield(I,'signalchannel3') == 1
+    signalchannel3 = strcat('_c00',num2str(I.signalchannel3));
+end
 
 %% File Names
-rokfileRoot = strcat(I.Root,I.Filename,'/Myosin/',I.Filename,'_t');
-membraneRoot = strcat(I.Root,I.Filename,'/Membranes/Raw/', I.Filename,'_t') ;%make this the file used for Edge membrane segmentation
+
+switch type
+    case 1
+        term = '';
+    case 2
+        term - '_t';
+end
+
+sig1fileRoot = strcat(I.Root,I.Filename,'/',I.sig1dir,'/',I.sig1dir,term);
+sig2fileRoot = strcat(I.Root,I.Filename,'/',I.sig2dir,'/',I.sig2dir,term);
+sig3fileRoot = strcat(I.Root,I.Filename,'/',I.sig3dir,'/',I.sig3dir,term);
+membraneRoot = strcat(I.Root,I.Filename,'/Membranes/Raw/', I.memdir,term) ;%make this the file used for Edge membrane segmentation
 measdir = strcat(I.Root,I.Filename,'/Measurements/');
     measCenty = 'Membranes--basic_2d--Centroid-y.mat';
     measCentx = 'Membranes--basic_2d--Centroid-x.mat';
@@ -47,29 +62,26 @@ measdir = strcat(I.Root,I.Filename,'/Measurements/');
     
     slice = I.edgedslice; %IMPORTANT. This specifies that the appropriate slice of data is drawn from the Edge data set.
     
-Centy = load(strcat(measdir,measCenty));
-    O.Centy = squeeze(Centy.data(:,slice ,:));
-    
-Centx = load(strcat(measdir,measCentx));
-    O.Centx = squeeze(Centx.data(:,slice,:));
-   
-Verty = load(strcat(measdir,measVerty));
-    O.Verty = squeeze(Verty.data(:,slice,:));
-   
-Vertx = load(strcat(measdir,measVertx));
-    O.Vertx = squeeze(Vertx.data(:,slice,:));
-   
-Area = load(strcat(measdir,measArea));
-     O.Area = squeeze(cell2mat(Area.data(:,slice,:)));
-     
-Perim = load(strcat(measdir,measPerim));
-    O.Perim = squeeze(Perim.data(:,slice,:));
-   
+Centy = load(strcat(measdir,measCenty));  
+Centx = load(strcat(measdir,measCentx)); 
+Verty = load(strcat(measdir,measVerty));  
+Vertx = load(strcat(measdir,measVertx));      
+Area = load(strcat(measdir,measArea));        
+Perim = load(strcat(measdir,measPerim));   
 SigInt = load(strcat(measdir,myoInt));
-    O.SigInt = squeeze(cell2mat(SigInt.data(:,slice,:)));
-    
-O.SigInt_areanorm = O.SigInt./O.Area; %generates an area-normalized signal intensity
 
+
+        O.Centy = squeeze(Centy.data(:,slice ,:));
+        O.Centx = squeeze(Centx.data(:,slice,:));
+        O.Verty = squeeze(Verty.data(:,slice,:));
+        O.Vertx = squeeze(Vertx.data(:,slice,:));
+        O.Area = squeeze(cell2mat(Area.data(:,slice,:)));
+        O.Perim = squeeze(Perim.data(:,slice,:));
+        O.SigInt = squeeze(cell2mat(SigInt.data(:,slice,:)));
+        
+
+O.SigInt_areanorm = O.SigInt./O.Area; %generates an area-normalized signal intensity
+    
     
 %% Determine framenum and cellnum
 switch type
@@ -99,11 +111,23 @@ end
 
 switch type
     case 1
+        mem_file = strcat(membraneRoot,zkeep,memchannel,'.tif');
+        sig1_file = strcat(sig1fileRoot,zkeep,signalchannel1,'.tif');
+       
         membranestack(:,:,1) = imread(mem_file);
-        signalstack1(:,:,1) = imread(
+        signalstack1(:,:,1) = imread(sig1_file);
+       
+       if isfield(I,'signalchannel2') == 1
+        sig2_file = strcat(sig2fileRoot,zkeep,signalchannel2,'.tif');
+        signalstack2(:,:,1) = imread(sig2_file);
+       end
         
+       if isfield(I,'signalchannel3') == 1
+        sig3_file = strcat(sig3fileRoot,zkeep,signalchannel3,'.tif');
+        signalstack3(:,:,1) = imread(sig3_file);
+       end
+   
     case 2
-
         for frame = 1:frame_num;
             if frame < 10
             I.timestep = strcat('00',num2str(frame));
@@ -111,17 +135,30 @@ switch type
             I.timestep = strcat('0',num2str(frame));
             end
         mem_file = strcat(membraneRoot,I.timestep,zkeep,memchannel,'.tif');
-        rok_file = strcat(rokfileRoot, I.timestep, zkeep,signalchannel1,'.tif');
-    
+        sig1_file = strcat(sig1fileRoot, I.timestep, zkeep,signalchannel1,'.tif');
+        
         membranestack(:,:,frame) = imread(mem_file);
-        rokstack(:,:,frame) = imread(rok_file);
+        signalstack1(:,:,frame) = imread(sig1_file);
+        
+        if isfield(I,'signalchannel2') == 1
+            sig2_file = strcat(sig2fileRoot, I.timestep, zkeep,signalchannel2,'.tif');
+            signalstack2(:,:,frame) = imread(sig2_file);
         end
+        end
+end
         
 
-end
 
 O.membranestack = membranestack
-O.signal = rokstack
+O.signal1 = signalstack1
+
+if isfield(I,'signalchannel2') == 1
+    O.signal2 = signalstack2
+end
+
+if isfield(I,'signalchannel3') == 1
+    O.signal3 = signalstack3
+end
 
     
 end
