@@ -43,10 +43,10 @@
     %NOTE: The .injection field is not necessary to populate if your movie 
     %does not contain a live perturbation.
     
-I.timestep      = 1;
-I.xy            = 0.10;
+I.timestep      = 1; %any number if not applicable
+I.xy            = 0.10; 
 I.z             = 1;
-I.zslice        = 8;
+I.zslice        = 8; %the image slice you want keep
 I.Filename      = '130614_RoksqhMBS_cont3';
 I.signalchannel1 = 1;
 I.sig1dir = 'RokProj'
