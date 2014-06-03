@@ -122,7 +122,7 @@ if filetype == [1,1,0] %tz
         end
 end
 
-if filetype == [0,0,1] %zc
+if filetype == [0,1,1] %zc
     for i_c = 1:c %loop through channels
          c_str = strcat('00',num2str(i_c));
         for i_z = 1:z %loop through z slices
